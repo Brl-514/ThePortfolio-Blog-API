@@ -4,8 +4,8 @@ const User = require('../models/User');
 
 const router = express.Router();
 
-// Create admin user (only if no admin exists)
-router.post('/create-admin', async (req, res) => {
+// Reset admin (delete existing admin and create new one)
+router.post('/reset-admin', async (req, res) => {
   try {
     const { email, username, password } = req.body;
     
@@ -13,19 +13,10 @@ router.post('/create-admin', async (req, res) => {
       return res.status(400).json({ message: 'Email, username, and password are required' });
     }
 
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({ role: 'admin' });
-    if (existingAdmin) {
-      return res.status(400).json({ message: 'Admin user already exists. Please use existing admin credentials or contact support to reset.' });
-    }
+    // Delete existing admin if exists
+    await User.deleteMany({ role: 'admin' });
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User with this email or username already exists' });
-    }
-
-    // Create admin user
+    // Create new admin user
     const admin = new User({ 
       email, 
       username, 
@@ -42,7 +33,7 @@ router.post('/create-admin', async (req, res) => {
     );
 
     res.status(201).json({
-      message: 'Admin user created successfully',
+      message: 'Admin user reset successfully',
       token,
       user: {
         id: admin._id,
@@ -52,8 +43,8 @@ router.post('/create-admin', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Create admin error:', error);
-    res.status(500).json({ message: 'Server error while creating admin' });
+    console.error('Reset admin error:', error);
+    res.status(500).json({ message: 'Server error while resetting admin' });
   }
 });
 
