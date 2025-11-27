@@ -21,11 +21,13 @@ const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blog');
 const projectRoutes = require('./routes/projects');
 const contactRoutes = require('./routes/contact');
+const adminRoutes = require('./routes/admin');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
